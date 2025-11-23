@@ -32,6 +32,8 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+const PORT=process.env.port || 5000;
+
 app.listen(5000,()=>{
     console.log("Server running on port 5000")
 })
