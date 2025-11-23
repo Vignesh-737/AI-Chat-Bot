@@ -10,7 +10,7 @@ const App = () => {
   const [showHistory, setshowHistory] = useState(true);
 
   const sendprompt = async (text) => {
-  const response = await axios.post("https://ai-chat-bot-e7i4.onrender.com",{message:text,});
+  const response = await axios.post("https://ai-chat-bot-e7i4.onrender.com/chat",{message:text,});
   const data=response.data.reply;
 
   setmessages(old => [
