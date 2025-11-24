@@ -7,18 +7,40 @@ import axios from 'axios'
 const App = () => {
   const [messages, setmessages] = useState([]);
   const [history, sethistory] = useState([]);
-  const [showHistory, setshowHistory] = useState(true);
+  const [showHistory, setshowHistory] = useState(false);
 
   const sendprompt = async (text) => {
-  const response = await axios.post("https://ai-chat-bot-e7i4.onrender.com/chat",{message:text,});
-  const data=response.data.reply;
 
-  setmessages(old => [
-    ...old,
-    { role: "user", text },
-    { role: "ai", text: data }
-  ]);
+  setmessages(old => [...old, { role: "user", text }]);
 
+  const typingId = Date.now(); 
+  setmessages(old => [...old, { role: "ai", text: "AI is typing...", id: typingId }]);
+
+  try {
+    const response = await axios.post(
+      "https://ai-chat-bot-e7i4.onrender.com/chat",
+      { message: text }
+    );
+
+    const aiReply = response.data.reply;
+
+    setmessages(old =>
+      old.map(msg =>
+        msg.id === typingId
+          ? { role: "ai", text: aiReply }
+          : msg
+      )
+    );
+
+  } catch (err) {
+    setmessages(old =>
+      old.map(msg =>
+        msg.id === typingId
+          ? { role: "ai", text: "Error fetching reply." }
+          : msg
+      )
+    );
+  }
 
   sethistory(old => [...old, text]);
 };
@@ -26,13 +48,13 @@ const App = () => {
   return (
     <>
     <div className="flex h-screen relative">
-      <button className='rounded-lg absolute left-4 top-4 bg-gray-800 px-3 py-1' onClick={()=>setshowHistory(prev=>!prev)}>{showHistory?"Hide":"Show"}</button>
+      <button className='rounded-lg absolute left-4 top-4 bg-blue-600 px-3 py-1' onClick={()=>setshowHistory(prev=>!prev)}>{showHistory?"Hide":"Show"}</button>
       {showHistory && <History history={history}/>}
         <div className="flex-1 flex flex-col bg-black text-white">
           <div className="p-4">
             <h1 className='searchBar text-center border-b-2 pb-2 text-xl'>AI CHAT BOT</h1>
           </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto px-3">
             {messages.map((msg,i)=>(
               <div className={`
       px-4 py-2 rounded-xl mb-3 whitespace-pre-wrap leading-relaxed
@@ -44,7 +66,9 @@ const App = () => {
 {msg.text}</div>
             ))}
           </div>
+          <div className='mt-auto'>
             <SearchBar onSend={sendprompt}/>
+            </div>
         </div>
       </div>
     </>
