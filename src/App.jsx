@@ -47,7 +47,7 @@ const App = () => {
 
   return (
     <>
-    <div className="flex h-screen relative">
+    <div className="flex min-h-screen relative">
       <button className='rounded-lg absolute left-4 top-4 bg-blue-600 px-3 py-1' onClick={()=>setshowHistory(prev=>!prev)}>{showHistory?"Hide":"Show"}</button>
       {showHistory && <History history={history}/>}
         <div className="flex-1 flex flex-col bg-black text-white">
@@ -66,7 +66,7 @@ const App = () => {
 {msg.text}</div>
             ))}
           </div>
-          <div className='mt-auto'>
+          <div className='fixed bottom-0 left-0 w-full bg-black p-3'>
             <SearchBar onSend={sendprompt}/>
             </div>
         </div>
